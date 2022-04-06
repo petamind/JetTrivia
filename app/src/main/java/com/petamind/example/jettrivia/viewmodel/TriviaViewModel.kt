@@ -1,6 +1,7 @@
 package com.petamind.example.jettrivia.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,7 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TriviaViewModel @Inject constructor(private val triviaRepo: TriviaRepository): ViewModel(){
-    val triviaData = MutableLiveData<List<TriviaItem>>()
+    //private var _triviaData: MutableLiveData<List<TriviaItem>> = MutableLiveData()
+    var triviaData = MutableLiveData<List<TriviaItem>>()
+
     private val listType = Types.newParameterizedType(
         List::class.java, TriviaItem::class.java
     )

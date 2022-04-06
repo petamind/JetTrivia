@@ -12,8 +12,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.LifecycleOwner
 import com.petamind.example.jettrivia.model.TriviaItem
 import com.petamind.example.jettrivia.ui.theme.JetTriviaTheme
 import com.petamind.example.jettrivia.util.LOG_TAG
@@ -43,16 +45,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(viewModel: TriviaViewModel) {
-    val composeScope = rememberCoroutineScope()
-    var trivia by remember {
-        mutableStateOf(viewModel.triviaData.value)
-    }
+    val trivia : List<TriviaItem>? by viewModel.triviaData.observeAsState(null)
     Log.i(LOG_TAG, "call Main: called")
     //TODO: travia will be an empty list and not update
-
-    composeScope.launch {
-
-    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -67,6 +62,7 @@ fun MainScreen(viewModel: TriviaViewModel) {
         }
     }
 }
+
 
 //@Preview(showBackground = true)
 //@Composable
