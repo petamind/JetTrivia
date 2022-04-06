@@ -1,1 +1,29 @@
 package com.petamind.example.jettrivia.viewmodel
+
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.petamind.example.jettrivia.model.TriviaItem
+import com.petamind.example.jettrivia.repository.TriviaRepository
+import com.petamind.example.jettrivia.util.LOG_TAG
+import com.squareup.moshi.Types
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class TriviaViewModel @Inject constructor(private val triviaRepo: TriviaRepository): ViewModel(){
+    val triviaData = MutableLiveData<List<TriviaItem>>()
+    private val listType = Types.newParameterizedType(
+        List::class.java, TriviaItem::class.java
+    )
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            triviaData.postValue(triviaRepo.callWebService())
+        }
+    }
+}
