@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,11 +16,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextIndent
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.petamind.example.jettrivia.model.TriviaItem
@@ -38,8 +49,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
-
             JetTriviaTheme {
                 // A surface container using the 'background' color from the theme
                 val triviaViewModel: TriviaViewModel by viewModels()
@@ -70,11 +79,23 @@ fun MainScreen(viewModel: TriviaViewModel?) {
             var radioGroupOptions =
                 if (!trivia.isNullOrEmpty()) trivia?.get(index)?.choices else emptyList()
             var question = if (!trivia.isNullOrEmpty()) trivia?.get(index)?.question ?: "" else ""
-            Column(Modifier.padding(12.dp).fillMaxWidth()) {
-                LinearProgressIndicator(progress = index.toFloat()/(if(!trivia.isNullOrEmpty()) trivia!!.size else 1), modifier = Modifier.height(30.dp).fillMaxWidth()
+            Column(
+                Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth()) {
+                LinearProgressIndicator(progress = index.toFloat()/(if(!trivia.isNullOrEmpty()) trivia!!.size else 1), modifier = Modifier
+                    .height(30.dp)
+                    .fillMaxWidth()
                     .clip(RoundedCornerShape(corner = CornerSize(8.dp))))
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = question, style = MaterialTheme.typography.h5)
+                Text(text = buildAnnotatedString {
+                    withStyle(style = ParagraphStyle(textIndent = TextIndent.None)){
+                        withStyle(style = SpanStyle(color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 24.sp)){
+                            append(question)
+                        }
+                    }
+
+                                                 } , style = MaterialTheme.typography.h5)
                 Spacer(modifier = Modifier.height(16.dp))
                 radioGroupOptions?.forEach { text ->
                     Row(Modifier
@@ -83,11 +104,24 @@ fun MainScreen(viewModel: TriviaViewModel?) {
                             selected = (text == selected),
                             onClick = { onSelectedChange(text) }
                         )
-                        .padding(horizontal = 16.dp)
+//                        .padding(horizontal = 16.dp)
+                        .height(45.dp)
+                        .border(
+                            width = 4.dp,
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color.DarkGray,
+                                    Color.Magenta
+                                )
+                            ),
+                            shape = RoundedCornerShape(15.dp)
+                        )
+                        , verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
                             selected = (text == selected),
-                            onClick = { onSelectedChange(text) }
+                            onClick = { onSelectedChange(text) },
+                            modifier = Modifier.padding(16.dp)
                         )
                         Text(
                             text = text,
@@ -95,6 +129,7 @@ fun MainScreen(viewModel: TriviaViewModel?) {
                             modifier = Modifier.padding(start = 16.dp)
                         )
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = {
